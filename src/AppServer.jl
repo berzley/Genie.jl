@@ -144,20 +144,27 @@ end
 
 function set_headers!(req::Request, res::Response, app_response::Response) :: Response
   if req.method == OPTIONS
-    App.config.cors_headers["Access-Control-Allow-Origin"] = strip(App.config.cors_headers["Access-Control-Allow-Origin"])
-
-    ! isempty(App.config.cors_allowed_origins) &&
-      in(req.headers["Origin"], App.config.cors_allowed_origins) &&
-      (App.config.cors_headers["Access-Control-Allow-Origin"] == "" ||
-        App.config.cors_headers["Access-Control-Allow-Origin"] == "*") &&
-      (App.config.cors_headers["Access-Control-Allow-Origin"] = req.headers["Origin"])
-
-    app_response.headers = merge(res.headers, App.config.cors_headers)
+    set_cors_headers!(req, app_response)
   end
 
   app_response.headers = merge(res.headers, app_response.headers)
 
   app_response.cookies = merge(res.cookies, app_response.cookies)
+
+  app_response
+end
+
+
+function set_cors_headers!(req::Request, app_response::Response) :: Response
+  App.config.cors_headers["Access-Control-Allow-Origin"] = strip(App.config.cors_headers["Access-Control-Allow-Origin"])
+
+  ! isempty(App.config.cors_allowed_origins) &&
+    in(req.headers["Origin"], App.config.cors_allowed_origins) &&
+    (App.config.cors_headers["Access-Control-Allow-Origin"] == "" ||
+      App.config.cors_headers["Access-Control-Allow-Origin"] == "*") &&
+    (App.config.cors_headers["Access-Control-Allow-Origin"] = req.headers["Origin"])
+
+    app_response.headers = merge(res.headers, App.config.cors_headers)
 
   app_response
 end
