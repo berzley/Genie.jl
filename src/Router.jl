@@ -29,9 +29,6 @@ const RESCUE_HOOK  = :rescue_hook
 
 const sessionless = Symbol[:json]
 
-# const Route   = Tuple{Tuple{String,String,Function},Dict{Symbol,Dict{Any,Any}}}
-# const Channel = Tuple{Tuple{String,Function},Dict{Symbol,Dict{Any,Any}}}
-
 
 mutable struct Route
   method::String
@@ -100,7 +97,7 @@ function route_request(req::Request, res::Response, ip::IPv4 = ip"0.0.0.0") :: R
   extract_get_params(URI(to_uri(req.resource)), params)
   res = negotiate_content(req, res, params)
 
-  req.method == OPTIONS && App.config.app_is_api && return preflight_response()
+  req.method == OPTIONS && return preflight_response()
 
   if is_static_file(req.resource)
     App.config.server_handle_static_files && return serve_static_file(req.resource)
